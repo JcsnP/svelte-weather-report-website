@@ -1,52 +1,7 @@
 <script>
   import { PUBLIC_API_KEY } from '$env/static/public'
   let location = ""
-  let weather = {
-    "coord": {
-        "lon": 100,
-        "lat": 8.25
-    },
-    "weather": [
-        {
-            "id": 804,
-            "main": "Clouds",
-            "description": "overcast clouds",
-            "icon": "04d"
-        }
-    ],
-    "base": "stations",
-    "main": {
-        "temp": 33,
-        "feels_like": 37.81,
-        "temp_min": 33,
-        "temp_max": 35.81,
-        "pressure": 1006,
-        "humidity": 55,
-        "sea_level": 1006,
-        "grnd_level": 1006
-    },
-    "visibility": 10000,
-    "wind": {
-        "speed": 3.68,
-        "deg": 69,
-        "gust": 2.9
-    },
-    "clouds": {
-        "all": 100
-    },
-    "dt": 1683704564,
-    "sys": {
-        "type": 1,
-        "id": 9274,
-        "country": "TH",
-        "sunrise": 1683673348,
-        "sunset": 1683718226
-    },
-    "timezone": 25200,
-    "id": 1608525,
-    "name": "Nakhon Si Thammarat",
-    "cod": 200
-}
+  let weather = ""
 
   async function getWeater() {
     const response = await fetch(
