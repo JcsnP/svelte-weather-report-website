@@ -1,3 +1,7 @@
+<svelte:head>
+  <title>Weather Report</title>
+</svelte:head>
+
 <script>
   import Swal from "sweetalert2"
 
@@ -16,7 +20,7 @@
         text: 'City Not Found!',
       })
       location = ""
-    } else {
+    } else {  
       weather = data
     }
   }
