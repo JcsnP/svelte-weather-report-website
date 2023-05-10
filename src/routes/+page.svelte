@@ -1,13 +1,59 @@
 <script>
   import { PUBLIC_API_KEY } from '$env/static/public'
   let location = ""
-  let weather = ""
+  let weather = {
+    "coord": {
+        "lon": 100,
+        "lat": 8.25
+    },
+    "weather": [
+        {
+            "id": 804,
+            "main": "Clouds",
+            "description": "overcast clouds",
+            "icon": "04d"
+        }
+    ],
+    "base": "stations",
+    "main": {
+        "temp": 33,
+        "feels_like": 37.81,
+        "temp_min": 33,
+        "temp_max": 35.81,
+        "pressure": 1006,
+        "humidity": 55,
+        "sea_level": 1006,
+        "grnd_level": 1006
+    },
+    "visibility": 10000,
+    "wind": {
+        "speed": 3.68,
+        "deg": 69,
+        "gust": 2.9
+    },
+    "clouds": {
+        "all": 100
+    },
+    "dt": 1683704564,
+    "sys": {
+        "type": 1,
+        "id": 9274,
+        "country": "TH",
+        "sunrise": 1683673348,
+        "sunset": 1683718226
+    },
+    "timezone": 25200,
+    "id": 1608525,
+    "name": "Nakhon Si Thammarat",
+    "cod": 200
+}
 
   async function getWeater() {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${PUBLIC_API_KEY}`
     )
     weather = await response.json()
+    console.log(weather)
   }
 </script>
 
@@ -15,6 +61,20 @@
   @import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@400;600;700&display=swap');
   * {
     font-family: 'Anuphan', sans-serif;
+  }
+
+  .hot {
+    background: rgb(255,255,255);
+    background: -moz-linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,236,213,1) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,236,213,1) 100%);
+    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,236,213,1) 100%);
+  }
+
+  .cool {
+    background: rgb(255,255,255);
+    background: -moz-linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(131,137,226,1) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(131,137,226,1) 100%);
+    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(131,137,226,1) 100%);
   }
 </style>
 
@@ -30,18 +90,23 @@
   </form>
 
   {#if weather}
-    <div class="w-1/2 mx-auto flex flex-row justify-between items-center border p-4 my-3 rounded-lg shadow-lg h-48">
-      <div class="flex flex-col font-semibold text-5xl justify-center items-center">
-        <h1>
+    <div class={`w-1/2 mx-auto flex flex-row justify-between items-center border my-3 rounded-lg shadow-xl p-8 ${weather.main.temp > 20 ? 'hot' : 'cool'}`}>
+      <div class="flex flex-col text-start gap-4">
+        <h1 class="text-6xl">
           {weather.main.temp} °C
         </h1>
+        <div class="text-base text-slate-500">
+          <p>{weather.name}</p>
+          <p>Sunset: {new Date(weather.sys.sunset * 1000).toLocaleTimeString()}</p>
+          <p>Humidity: {weather.main.humidity}%</p>
+          <p>Pressure: {weather.main.pressure}mb</p>
+        </div>
       </div>
-      <div class="text-xl">
-        <p>Sunset: {new Date(weather.sys.sunset * 1000).toLocaleTimeString()}</p>
-        <p>{weather.name}</p>
-        <p>Humidity: {weather.main.humidity}%</p>
-        <p>Pressure: {weather.main.pressure}mb</p>
-      </div>
+      {#if weather.main.temp > 20}
+        <img src="https://cdn-icons-png.flaticon.com/512/869/869869.png" width="150" alt="hot" />
+      {:else}
+        <img src="https://cdn-icons-png.flaticon.com/512/642/642000.png" width="150" alt="cool" />
+      {/if}
     </div>
   {/if}
 
