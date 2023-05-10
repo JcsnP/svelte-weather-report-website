@@ -1,14 +1,24 @@
 <script>
-  import { PUBLIC_API_KEY } from '$env/static/public'
+  import Swal from "sweetalert2"
+
   let location = ""
   let weather = ""
 
   async function getWeater() {
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${PUBLIC_API_KEY}`
+      `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${import.meta.env.VITE_API_KEY}`
     )
-    weather = await response.json()
-    console.log(weather)
+    const data = await response.json()
+    if(data.cod === "404") {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'City Not Found!',
+      })
+      location = ""
+    } else {
+      weather = data
+    }
   }
 </script>
 
@@ -39,7 +49,7 @@
   </h1>
   <form class="w-1/2 mx-auto" on:submit|preventDefault={getWeater}>
     <div class="flex flex-col mb-2"> 
-      <input class="border border-gray-400 p-2 bg-gray-100 rounded-lg" type="text" placeholder="Find City. Nakhon Si Thammarat" bind:value={location} />
+      <input class="border border-gray-400 p-2 bg-gray-100 rounded-lg" type="text" placeholder="Find City." bind:value={location} />
     </div>
     <button class="border w-full bg-blue-600 text-white p-2 rounded-lg shadow-lg hover:bg-blue-700">Get Weather</button>
   </form>
