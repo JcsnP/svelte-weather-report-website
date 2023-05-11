@@ -4,9 +4,21 @@
 
 <script>
   import Swal from "sweetalert2"
+  import moment from "moment"
 
   let location = ""
   let weather = ""
+  let forecast = ""
+
+  async function getForecast() {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?q=${location}&units=metric&cnt=7&appid=${import.meta.env.VITE_API_KEY}`
+    )
+    const data = await response.json()
+    if(data.cod == "200") {
+      forecast = data
+    }
+  }
 
   async function getWeater() {
     const response = await fetch(
@@ -23,6 +35,11 @@
     } else {  
       weather = data
     }
+  }
+
+  async function getWeatherAndForecast() {
+    await getWeater()
+    await getForecast()
   }
 </script>
 
@@ -45,13 +62,17 @@
     background: -webkit-linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(131,137,226,1) 100%);
     background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(131,137,226,1) 100%);
   }
+
+  .weather-card {
+    background: radial-gradient(circle at 10% 20%, rgba(216, 241, 230, 0.46) 0.1%, rgba(233, 226, 226, 0.28) 90.1%);
+  }
 </style>
 
 <div class="container mx-auto">
   <h1 class="text-4xl my-5 font-semibold text-center">
     Weather Report
   </h1>
-  <form class="w-1/2 mx-auto" on:submit|preventDefault={getWeater}>
+  <form class="w-1/2 mx-auto" on:submit|preventDefault={getWeatherAndForecast}>
     <div class="flex flex-col mb-2"> 
       <input class="border border-gray-400 p-2 bg-gray-100 rounded-lg" type="text" placeholder="Find City." bind:value={location} />
     </div>
@@ -59,8 +80,8 @@
   </form>
 
   {#if weather}
-    <div class={`w-1/2 mx-auto flex flex-row justify-between items-center border my-3 rounded-lg shadow-xl p-8 ${weather.main.temp > 20 ? 'hot' : 'cool'}`}>
-      <div class="flex flex-col text-start gap-4">
+    <div class={`w-1/2 mx-auto flex flex-col-reverse md:flex-row items-center justify-between text-start gap-4 border my-3 rounded-lg shadow-xl p-8 ${weather.main.temp > 20 ? 'hot' : 'cool'}`}>
+      <div class="w-100">
         <h1 class="text-6xl">
           {weather.main.temp} °C
         </h1>
@@ -76,6 +97,21 @@
       {:else}
         <img src="https://cdn-icons-png.flaticon.com/512/642/642000.png" width="150" alt="cool" />
       {/if}
+    </div>
+  {/if}
+
+  {#if forecast}
+    <div class="w-1/2 mx-auto flex md:flex-nowrap flex-wrap gap-2 items-center justify-between my-4">
+      {#each forecast.list as item}
+        <div class="p-2 rounded-lg shadow-lg border weather-card">
+          <h1 class="text-sm text-center">{moment(item.dt_txt).calendar()}</h1>
+          <img class="mx-auto" src={`https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`} alt="cloud" width="64" height="64">
+          <div class="flex flex-col items-center justify-between text-xs mt-3">
+            <h1>{item.main.temp} °C</h1>
+            <h1>{item.weather[0].main}</h1>
+          </div>
+        </div>
+      {/each}
     </div>
   {/if}
 
